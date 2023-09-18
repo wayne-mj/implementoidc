@@ -1,0 +1,33 @@
+name: Deploy files
+
+on:
+  push:
+    tags:
+      - 'v*' # Run only when a tag is pushed with a version format like 'v1.0.0'
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy-website:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      
+      - name: Build website
+        run: |
+          mkdir -p deploy
+          cp afile.txt ./deploy
+
+      - name: Setup AWS CLI
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Upload files to S3
+        run: |
+          aws s3 sync deploy/ s3://${{ secrets.AWS_S3_BUCKET_NAME }}/ --delete
+          rm -rf deploy

@@ -18,8 +18,9 @@ jobs:
       
       - name: Build website
         run: |
-          mkdir -p deploy
+          mkdir -p deploy/test
           cp afile.txt ./deploy
+          cp afile.txt ./deploy/test
 
       - name: Setup AWS CLI
         uses: aws-actions/configure-aws-credentials@v3
